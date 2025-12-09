@@ -12,3 +12,6 @@ datasources:
 
     url: http://${PROMETHEUS_CONTAINER}:${PROMETHEUS_PORT} # URL where the prometheus server can be accessed
     # works bc it is part of the monitoring network and docker has DNS under the hood
+    uid: prometheus # Fixed UID for the datasource
+    isDefault: true # Make this the default datasource
+    editable: false # Prevent users from editing this datasource

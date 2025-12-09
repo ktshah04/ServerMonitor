@@ -1,0 +1,25 @@
+{
+  "comment": "Configuration for monitored storage drives",
+  "drives": [
+    {
+      "mountpoint": "/rootfs",
+      "label": "Root /",
+      "description": "Root filesystem (nvme3n1p2)"
+    },
+    {
+      "mountpoint": "/rootfs/home",
+      "label": "Home",
+      "description": "Home partition (nvme3n1p4)"
+    },
+    {
+      "mountpoint": "/rootfs/mnt/data0",
+      "label": "Data0 (RAID1)",
+      "description": "RAID1 array (md0)"
+    },
+    {
+      "mountpoint": "/rootfs/mnt/data1",
+      "label": "Data1",
+      "description": "Single drive (nvme2n1)"
+    }
+  ]
+}

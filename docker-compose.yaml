@@ -50,7 +50,7 @@ services:
     container_name: ${GRAFANA_CONTAINER} # Container name from .env file
     restart: always # Ensures the container always restarts if it crashes
     ports:
-      - ${GRAFANA_PORT}:${GRAFANA_PORT} # maps grafana port from container to host
+      - ${GRAFANA_PORT}:3000 # maps host port to grafana's internal port 3000
     env_file: .env # loads .env variables
     volumes:
       - ./config/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml

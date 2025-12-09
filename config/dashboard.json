@@ -30,7 +30,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -98,7 +98,8 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "list",
           "placement": "bottom",
@@ -113,7 +114,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
           "legendFormat": "CPU Usage",
@@ -126,7 +127,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -194,7 +195,8 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "list",
           "placement": "bottom",
@@ -209,7 +211,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
           "legendFormat": "Memory Usage",
@@ -222,7 +224,303 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs\",fstype!=\"tmpfs\"}))",
+          "refId": "A"
+        }
+      ],
+      "title": "Root /",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/home\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/home\",fstype!=\"tmpfs\"}))",
+          "refId": "A"
+        }
+      ],
+      "title": "Home",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/mnt/data0\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/mnt/data0\",fstype!=\"tmpfs\"}))",
+          "refId": "A"
+        }
+      ],
+      "title": "Data0 (RAID1)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/mnt/data1\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/mnt/data1\",fstype!=\"tmpfs\"}))",
+          "refId": "A"
+        }
+      ],
+      "title": "Data1",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -289,11 +587,11 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 8
+        "y": 15
       },
-      "id": 3,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [
@@ -312,7 +610,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "irate(node_network_receive_bytes_total{device!~\"lo|docker.*|veth.*\"}[5m])",
           "legendFormat": "{{device}} Receive",
@@ -321,7 +619,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "irate(node_network_transmit_bytes_total{device!~\"lo|docker.*|veth.*\"}[5m])",
           "legendFormat": "{{device}} Transmit",
@@ -334,7 +632,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -401,11 +699,11 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 16
+        "w": 12,
+        "x": 12,
+        "y": 15
       },
-      "id": 4,
+      "id": 8,
       "options": {
         "legend": {
           "calcs": [
@@ -424,7 +722,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "irate(node_disk_read_bytes_total{device=~\"nvme.*|md.*\"}[5m])",
           "legendFormat": "{{device}} Read",
@@ -433,7 +731,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "irate(node_disk_written_bytes_total{device=~\"nvme.*|md.*\"}[5m])",
           "legendFormat": "{{device}} Write",
@@ -446,377 +744,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "orange",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 0,
-        "y": 24
-      },
-      "id": 5,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "11.6.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs\",fstype!=\"tmpfs\"}))",
-          "refId": "A"
-        }
-      ],
-      "title": "Root /",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "orange",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 5,
-        "y": 24
-      },
-      "id": 6,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "11.6.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/home\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/home\",fstype!=\"tmpfs\"}))",
-          "refId": "A"
-        }
-      ],
-      "title": "Home",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "orange",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 10,
-        "y": 24
-      },
-      "id": 7,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "11.6.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/boot/efi\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/boot/efi\",fstype!=\"tmpfs\"}))",
-          "refId": "A"
-        }
-      ],
-      "title": "Boot EFI",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "orange",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 15,
-        "y": 24
-      },
-      "id": 8,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "11.6.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/mnt/data0\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/mnt/data0\",fstype!=\"tmpfs\"}))",
-          "refId": "A"
-        }
-      ],
-      "title": "Data0 (RAID1)",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "orange",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 20,
-        "y": 24
-      },
-      "id": 9,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "11.6.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=\"/rootfs/mnt/data1\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs/mnt/data1\",fstype!=\"tmpfs\"}))",
-          "refId": "A"
-        }
-      ],
-      "title": "Data1",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -930,9 +858,9 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 23
       },
-      "id": 10,
+      "id": 9,
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -950,20 +878,19 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
-          "expr": "node_filesystem_size_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/boot/efi|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}",
+          "expr": "node_filesystem_size_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}",
           "format": "table",
           "instant": true,
-          "legendFormat": "{{mountpoint}}",
           "refId": "A"
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
-          "expr": "node_filesystem_avail_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/boot/efi|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}",
+          "expr": "node_filesystem_avail_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}",
           "format": "table",
           "instant": true,
           "refId": "B"
@@ -971,9 +898,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
-          "expr": "node_filesystem_size_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/boot/efi|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"} - node_filesystem_avail_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/boot/efi|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}",
+          "expr": "node_filesystem_size_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"} - node_filesystem_avail_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}",
           "format": "table",
           "instant": true,
           "refId": "C"
@@ -981,9 +908,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
-          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/boot/efi|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/boot/efi|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}))",
+          "expr": "100 * (1 - (node_filesystem_avail_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"} / node_filesystem_size_bytes{mountpoint=~\"/rootfs|/rootfs/home|/rootfs/mnt/data0|/rootfs/mnt/data1\",fstype!=\"tmpfs\"}))",
           "format": "table",
           "instant": true,
           "refId": "D"
@@ -1001,7 +928,6 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
-              "device": false,
               "fstype": true,
               "instance": true,
               "job": true
@@ -1021,6 +947,65 @@
               "Value #D": "Used %",
               "device": "Device",
               "mountpoint": "Mount Point"
+            }
+          }
+        },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "Available": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "Device": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Mount Point": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Total": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "Used": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "Used %": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              }
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Mount Point": 0,
+              "Device": 1,
+              "Total (lastNotNull)": 2,
+              "Used (lastNotNull)": 3,
+              "Available (lastNotNull)": 4,
+              "Used % (lastNotNull)": 5
+            },
+            "renameByName": {
+              "Available (lastNotNull)": "Available",
+              "Total (lastNotNull)": "Total",
+              "Used (lastNotNull)": "Used",
+              "Used % (lastNotNull)": "Used %"
             }
           }
         }
