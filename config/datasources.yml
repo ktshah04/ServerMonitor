@@ -1,0 +1,14 @@
+# Grafana datasources configuration
+# This file defines the data sources fhat grafana will use to fetch data for dashboards
+
+apiVersion: 1 # Specifies the API version for this configuration
+
+datasources:
+  - name: Prometheus # The name of the data source as it will appear on Grafana
+    type: prometheus # The type of the data source indicating it is prometheus instance
+    access: proxy # Access mode; proxy means requests will go through the grafana server
+
+    # Access mode direct would mean requests are made from the user's browser
+
+    url: http://${PROMETHEUS_CONTAINER}:${PROMETHEUS_PORT} # URL where the prometheus server can be accessed
+    # works bc it is part of the monitoring network and docker has DNS under the hood

@@ -1,0 +1,63 @@
+# Defines the custom netowrk used by all services in this stack
+networks:
+  monitoring:
+    driver: bridge # Uses a bridge network to allow containers to communicate (and isolates them to this network)
+
+# Defines the volumnes for persistent data storage
+volumes:
+  prometheus_data:
+    name: prometheus_data # Defines a named volume for Prometheus data
+  grafana_data:
+    name: grafana_data # Defines named volume for Grafana data
+
+# Defining services
+services:
+
+  # Service definition for Prometheus (collects and stores metrics from Node Exporter)
+  prometheus:
+    image: prom/prometheus:latest # Specifies the Prometheus Docker image
+    container_name: ${PROMETHEUS_CONTAINER} # Container name from .env file
+    restart: always # Ensures the container always restarts if it crashes
+    env_file: .env # loads .env variables
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml # Mount local prometheus config
+      # - prometheus_data:/prometheus # Optional mount for persistent prometheus data storage
+    expose:
+      - ${PROMETHEUS_PORT} # Exposes prometheus port 
+    networks:
+      - monitoring # Connects prometheus to monitoring network
+    depends_on:
+      - node-exporter # ensures node-exporter starts before prometheus
+
+  # Service definition for NodeExporter (collects system metrics)
+  node-exporter:
+    image: prom/node-exporter:latest # Specifies the NodeExporter Docker image
+    container_name: ${NODE_EXPORTER_CONTAINER} # Container name from .env file
+    restart: always # Ensures the container always restarts if it crashes
+    env_file: .env # loads .env variables
+    volumes:
+      - /proc:/host/proc:ro # Mounts the /proc directory from the host into the container (read-only)
+      - /sys:/host/sys:ro # Mounts host /sys into the container read only
+      - /:/rootfs:ro # Mount the host root dir into the container read only
+    expose:
+      - ${NODE_EXPORTER_PORT} # Exposes node-exporter port 
+    networks:
+      - monitoring # Connects node-exporter to monitoring network
+
+    # Service definition for Grafana (visualize metrics collected by Prometheus)
+  grafana:
+    image: grafana/grafana # Specifies the Grafana Docker image
+    container_name: ${GRAFANA_CONTAINER} # Container name from .env file
+    restart: always # Ensures the container always restarts if it crashes
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT} # maps grafana port from container to host
+    env_file: .env # loads .env variables
+    volumes:
+      - ./config/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./config/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
+      - ./config/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
+      # - grafana_data:/var/lib/grafana # Optional mount for persistent grafana data storage
+    networks:
+      - monitoring # Connects node-exporter to monitoring network
+    depends_on:
+      - prometheus # Ensures prometheus starts before grafana

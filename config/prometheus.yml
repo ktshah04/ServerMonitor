@@ -1,0 +1,23 @@
+# This configuration file sets up Prometheus to scrape metrics from defined sources,
+# including Prometheus itself and Node Exporter, with the ability to customize scrape intervals
+# Prometheus doesnt support env variables out of the box so not using that in this file currently
+# node exporter scrapes at global interval
+
+global:
+  # Sets the default scraping interval for all jobs to 15 seconds
+  scrape_interval: 15s
+
+scrape_configs:
+  # Configuration for scraping metrics from the Prometheus server itself
+  - job_name: 'prometheus'
+    # Overrides the global scrape intervale to 10 seconds for the prometheus job
+    scrape_interval: 10s
+    static_configs:
+      # Targets the Prometheus instance running at 'prometheus-c' on port 9090 (prometheus container)
+      - targets: ['prometheus-c:9090']
+
+  # Configuration for scraping metrics from the node exporter, which provides the system level metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      # Targets the node exporter instance running at 'node-exporter-c' on port 9100 (node exporter container)
+      - targets: ['node-exporter-c:9100']

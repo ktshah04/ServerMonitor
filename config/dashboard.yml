@@ -1,0 +1,18 @@
+# Grafana dashboard provider configuration
+# This file defines how grafana will manage and load dashboards
+
+apiVersion: 1 # Specifies the API version for this configuration
+
+providers:
+  - name: Dashboard Provider
+    orgId: 1 # Organization ID; typically 1 for default org in Grafana
+    type: file # Indicates dashboards are loaded from the file
+
+    disableDeletion: false # if true, prevents deletion of dashboards from this provider via the UI
+    updateIntervalSeconds: 10 # How often in seconds Grafana will check for updates to the dashboards
+
+    allowUiUpdates: false # if true, allows updates to dashboards through the grafana UI
+
+    options:
+      path: /var/lib/grafana/dashboards # filesystem path where dashboard files are located (matches path in docker-compose for dashboard.json)
+      foldersFromFilesStructure: true # if true, enables the creation of folders based on file structure
