@@ -8,8 +8,6 @@ contactPoints:
         type: slack
         settings:
           url: ${SLACK_WEBHOOK_URL}
-          text: |
-            {{ range .Alerts }}
-              {{ if .Labels.device }}⚠️ {{ .Labels.device }} ({{ .Labels.mountpoint }}) storage alert{{ else }}{{ .Annotations.summary }}{{ end }}
-            {{ end }}
+          title: "{{ range .Alerts }}Storage Alert ({{ .Labels.device }}){{ end }}"
+          text: "{{ range .Alerts }}⚠️ {{ .Labels.mountpoint }} is more than 90% full{{ end }}"
         disableResolveMessage: false

@@ -127,7 +127,7 @@ groups:
     labels: {}
     isPaused: false
   - uid: storage-alert-physical-drives
-    title: Storage Alert - Physical Drives
+    title: Storage Alert
     condition: C
     data:
     - refId: A
@@ -183,7 +183,7 @@ groups:
     execErrState: Alerting
     for: 10s
     annotations:
-      summary: 'Storage alert: drive is above threshold'
-      description: Physical drive storage has exceeded 90%
+      summary: Drive is more than 90% full
+      description: ''
     labels: {}
     isPaused: false

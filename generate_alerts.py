@@ -113,10 +113,10 @@ if alerts_config["storage_alerts"]["enabled"]:
 
     alert_rules.append(create_alert(
         uid="storage-alert-physical-drives",
-        title="Storage Alert - Physical Drives",
+        title="Storage Alert",
         expr=storage_expr,
-        summary="Storage alert: drive is above threshold",
-        description=f"Physical drive storage has exceeded {cfg['threshold_percent']}%",
+        summary=f"Drive is more than {cfg['threshold_percent']}% full",
+        description="",
         for_duration=cfg["sustained_duration"],
         threshold=cfg["threshold_percent"]
     ))
