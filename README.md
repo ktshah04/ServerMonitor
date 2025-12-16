@@ -1,5 +1,7 @@
 # Server Monitor
 
+![Dashboard](images/dashboard.png)
+
 A dynamic server monitoring dashboard using Prometheus, Node Exporter, and Grafana. Monitors CPU, memory, network, disk I/O, and storage usage with automatic drive detection and configurable alerts.
 
 ## Components
@@ -35,11 +37,18 @@ PROMETHEUS_PORT=9090
 
 GRAFANA_CONTAINER=grafana-c
 GRAFANA_PORT=3000
+GRAFANA_ROOT_URL=http://YOUR_HOSTNAME:3000
 
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 ```
 
-Replace the `SLACK_WEBHOOK_URL` with your actual Slack webhook URL for alert notifications.
+Replace:
+- `YOUR_HOSTNAME` with your server's hostname or IP address (e.g., `server01` or `192.168.1.100`)
+- `SLACK_WEBHOOK_URL` with your actual Slack webhook URL for alert notifications
+
+**Important Notes**:
+- Setting `GRAFANA_ROOT_URL` ensures that links in Slack notifications point to your server's hostname instead of localhost
+- If you change `GRAFANA_PORT`, make sure to update the port number in `GRAFANA_ROOT_URL` to match (e.g., if `GRAFANA_PORT=4000`, then `GRAFANA_ROOT_URL=http://YOUR_HOSTNAME:4000`)
 
 ### 3. Configure Alerts
 
@@ -47,11 +56,7 @@ Edit `config/alerts_config.json` to customize alert thresholds and notification 
 
 ```json
 {
-  "slack": {
-    "webhook_url": "REPLACE_WITH_YOUR_SLACK_WEBHOOK_URL",
-    "channel": "#alerts",
-    "mention_users": []
-  },
+  "check_interval": "10s",
   "storage_alerts": {
     "enabled": true,
     "threshold_percent": 90,
@@ -62,34 +67,29 @@ Edit `config/alerts_config.json` to customize alert thresholds and notification 
     "enabled": true,
     "threshold_percent": 80,
     "sustained_duration": "10m",
-    "evaluation_interval": "1m",
     "notification_interval": "1h"
   },
   "memory_alerts": {
     "enabled": true,
     "threshold_percent": 90,
     "sustained_duration": "5m",
-    "evaluation_interval": "1m",
     "notification_interval": "1h"
   }
 }
 ```
 
 Configuration options:
-- **enabled**: Enable or disable alerts for this metric
+- **check_interval** (global): How often Grafana evaluates all alerts (default: `10s`)
+- **enabled**: Enable or disable alerts for this metric type
 - **threshold_percent**: Percentage threshold that triggers the alert
-- **sustained_duration**: How long the threshold must be exceeded before alerting (CPU/Memory only)
-- **evaluation_interval**: How often Grafana checks if the condition is true
-- **notification_interval**: ⚠️ **IMPORTANT** - Controls how frequently you receive Slack notifications while an alert is firing
+- **sustained_duration**: How long the threshold must be exceeded before firing the alert
+- **notification_interval**: How often to resend Slack notifications while an alert is active
 
 **Understanding notification_interval:**
-This is the PRIMARY setting that controls alert frequency. When an alert is active, Grafana will send a Slack notification at this exact interval.
+This controls how frequently you receive Slack notifications while an alert is firing.
 
-- For testing: `"20s"` = notification every 20 seconds
-- For production storage alerts: `"24h"` = one notification per day (recommended)
-- For production CPU/memory alerts: `"1h"` = one notification per hour
 
-**Important:** The `notification_interval` must be a multiple of 10 seconds (Grafana's scheduler runs every 10s). Valid values: `10s`, `20s`, `30s`, `1m`, `5m`, `1h`, `24h`.
+Valid duration formats: `10s`, `20s`, `30s`, `1m`, `5m`, `1h`, `24h`
 
 ### 4. Generate Alerts
 
@@ -99,7 +99,11 @@ Generate alert rules from the configuration:
 python3 generate_alerts.py
 ```
 
-**Note**: Both dashboard and alerts are now fully dynamic! Alerts automatically monitor all physical drives.
+This generates:
+- `config/alert_rules.yml` - Grafana alert rules
+- `config/notification_policies.yml` - Notification timing policies
+
+**Note**: The dashboard is fully dynamic and doesn't need regeneration. Alerts automatically monitor all physical drives.
 
 ### 5. Start Services
 
@@ -123,6 +127,30 @@ Note: If you changed `GRAFANA_PORT` to something other than 3000 (e.g., 4000), y
 
 In the Grafana dashboard, use the "mountpoint" dropdown at the top to select which filesystems you want to see in the storage gauges. By default, all non-tmpfs filesystems are shown.
 
+## User Access Options
+
+The dashboard is configured with **anonymous read-only access** enabled, making it easy for users to view metrics without logging in.
+
+### Option 1: Direct Access (Current Setup)
+Users can access the dashboard at:
+```
+http://jc-compute01:3000
+```
+
+- No login required for viewing dashboards
+- Admin access still available at the login page (username: `admin`, password: `admin` - change on first login)
+
+### Option 2: Share Direct Dashboard Link
+
+Get the direct link to your dashboard:
+1. Open the dashboard in Grafana
+2. The URL will be: `http://jc-compute01:3000/d/server-monitor/server-monitor-dynamic`
+3. Share this link with users
+
+### Security Notes
+
+- **Access is read-only** - users cannot modify dashboards or settings
+
 ## Dashboard Features
 
 ### Dynamic Drive Detection
@@ -131,17 +159,12 @@ The dashboard automatically detects and displays **all available filesystems** f
 ### Interactive Controls
 Use the **mountpoint dropdown** at the top of the dashboard to select which filesystems to monitor. Changes apply instantly without reloading.
 
-### Layout
-- **Row 1**: CPU Usage and Memory Usage (side by side)
-- **Row 2**: Storage gauges - one per selected filesystem, showing usage percentage
-- **Row 3**: Network Traffic and Disk I/O (side by side)
-- **Row 4**: Storage Details table with size, usage, and availability for all selected filesystems
 
 ## Updating Configuration
 
 ### Adding/Removing Monitored Drives
 
-**Everything is automatic!** Both dashboard and alerts discover drives dynamically.
+Dashboard and alerts discover drives dynamically.
 
 - **Dashboard**: Use the dropdown to select which filesystems to display
 - **Alerts**: Automatically monitor all physical drives (no configuration needed)
@@ -171,56 +194,3 @@ The dashboard includes configurable alerts for:
 - **Memory Alerts**: Triggered when memory usage exceeds the threshold for a sustained duration (default: 90% for 5 minutes). Notifications sent hourly.
 
 All alerts send notifications to the configured Slack webhook URL. Alert thresholds, durations, and notification intervals are fully configurable via `config/alerts_config.json`.
-
-## Troubleshooting
-
-### Dashboard shows "No Data"
-
-- Check that all containers are running: `docker ps`
-- Verify Prometheus is scraping metrics: `http://<server-ip>:9090/targets`
-- Verify the datasource is configured correctly in Grafana's settings
-
-### Drives not appearing in dropdown
-
-- The dashboard shows all filesystems that Prometheus discovers automatically
-- Check available metrics: `docker exec prometheus-c wget -qO- "http://localhost:9090/api/v1/query?query=node_filesystem_size_bytes"`
-- Verify Node Exporter is running: `docker ps | grep node-exporter`
-
-### Alerts not working
-
-- Check Grafana alerting is enabled: Grafana → Alerting → Alert rules
-- Verify Slack webhook URL in `.env` file
-- Check Grafana logs: `docker compose logs grafana`
-
-### Port conflicts
-
-- Update ports in `.env` file if defaults are already in use
-- Restart services: `docker compose down && docker compose up -d`
-
-## File Structure
-
-```
-server_monitor/
-├── config/
-│   ├── alerts_config.json           # Alert thresholds and settings
-│   ├── alerting.yml                 # Grafana alerting provisioning config
-│   ├── alert_rules.yml              # Generated alert rules (auto-generated)
-│   ├── notification_policies.yml    # Notification routing (auto-generated)
-│   ├── dashboard_dynamic.json       # Dynamic Grafana dashboard
-│   ├── dashboard.yml                # Dashboard provisioning config
-│   ├── datasources.yml              # Prometheus datasource config
-│   └── prometheus.yml               # Prometheus scrape config
-├── docker-compose.yaml              # Docker services definition
-├── generate_alerts.py               # Alert generation script
-├── .env                             # Environment variables
-└── README.md                        # This file
-```
-
-## Benefits
-
-- ✅ **Zero configuration**: Dashboard and alerts automatically discover all drives
-- ✅ **No manual drive lists**: Everything is dynamic from Prometheus
-- ✅ **Minimal files**: Only essential configuration needed
-- ✅ **Easy maintenance**: Change thresholds in one place
-- ✅ **Network drive filtering**: Automatically excludes NFS/SMB mounts
-- ✅ **Device names in alerts**: Slack shows "nvme3n1p4 is 87% full"
