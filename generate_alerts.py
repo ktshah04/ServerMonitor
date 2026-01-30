@@ -79,7 +79,7 @@ def create_alert(uid, title, expr, summary, description, for_duration, threshold
     }
 
 # CPU alert
-if alerts_config["cpu_alerts"]["enabled"]:
+if alerts_config.get("cpu_alerts", {}).get("enabled"):
     cfg = alerts_config["cpu_alerts"]
     alert_rules.append(create_alert(
         uid="cpu-usage-alert",
@@ -92,7 +92,7 @@ if alerts_config["cpu_alerts"]["enabled"]:
     ))
 
 # Memory alert
-if alerts_config["memory_alerts"]["enabled"]:
+if alerts_config.get("memory_alerts", {}).get("enabled"):
     cfg = alerts_config["memory_alerts"]
     alert_rules.append(create_alert(
         uid="memory-usage-alert",
@@ -105,7 +105,7 @@ if alerts_config["memory_alerts"]["enabled"]:
     ))
 
 # Storage alert - single dynamic alert for all physical drives
-if alerts_config["storage_alerts"]["enabled"]:
+if alerts_config.get("storage_alerts", {}).get("enabled"):
     cfg = alerts_config["storage_alerts"]
     # Matches: /rootfs, /rootfs/home, /rootfs/mnt/data[0-9]+
     # Excludes: network mounts, tmpfs, other system paths
