@@ -14,8 +14,15 @@ fi
 container_name=$(docker inspect --format '{{.Name}}' "$container_id" | sed 's|^/||')
 echo "Found container: $container_name"
 
+if [ -d "$BACKUP_DIR" ]; then
+    existing_size=$(du -sh "$BACKUP_DIR" | cut -f1)
+    echo "Error: Backup already exists at $BACKUP_DIR ($existing_size)."
+    echo "If a previous migration failed, you may want to resume manually."
+    echo "Remove it with: rm -rf $BACKUP_DIR"
+    exit 1
+fi
+
 echo "Backing up Prometheus data from container..."
-rm -rf "$BACKUP_DIR"
 docker cp "$container_name:/prometheus" "$BACKUP_DIR"
 backup_size=$(du -sh "$BACKUP_DIR" | cut -f1)
 echo "Backup complete ($backup_size) at $BACKUP_DIR"
@@ -26,8 +33,8 @@ docker compose up -d
 echo "Stopping Prometheus to copy data onto volume..."
 docker compose stop "$SERVICE"
 
-container_name=$(docker compose ps -q "$SERVICE" 2>/dev/null)
-container_name=$(docker inspect --format '{{.Name}}' "$container_name" | sed 's|^/||')
+container_id=$(docker compose ps -aq "$SERVICE" 2>/dev/null)
+container_name=$(docker inspect --format '{{.Name}}' "$container_id" | sed 's|^/||')
 
 echo "Copying backed-up data into new container..."
 docker cp "$BACKUP_DIR/." "$container_name:/prometheus"
