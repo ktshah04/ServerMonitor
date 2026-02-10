@@ -19,9 +19,12 @@ services:
     container_name: ${PROMETHEUS_CONTAINER} # Container name from .env file
     restart: always # Ensures the container always restarts if it crashes
     env_file: .env # loads .env variables
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml # Mount local prometheus config
-      # - prometheus_data:/prometheus # Optional mount for persistent prometheus data storage
+      - prometheus_data:/prometheus
     expose:
       - ${PROMETHEUS_PORT} # Exposes prometheus port 
     networks:

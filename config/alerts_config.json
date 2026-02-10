@@ -17,5 +17,12 @@
     "threshold_percent": 95,
     "sustained_duration": "10m",
     "notification_interval": "1h"
+  },
+  "storage_projection_alerts": {
+    "enabled": true,
+    "days_until_full_threshold": 30,
+    "lookback_window": "7d",
+    "sustained_duration": "1h",
+    "notification_interval": "24h"
   }
 }

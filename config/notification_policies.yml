@@ -19,3 +19,11 @@ policies:
     group_wait: 0s
     group_interval: 10s
     repeat_interval: 1790s
+  - receiver: slack-alerts-storage-projection
+    matchers:
+    - alert_type=storage_projection
+    group_by:
+    - alertname
+    group_wait: 0s
+    group_interval: 10s
+    repeat_interval: 1790s

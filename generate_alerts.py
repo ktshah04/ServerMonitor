@@ -22,7 +22,7 @@ with open('config/alerts_config.json', 'r') as f:
 # Store alert rules
 alert_rules = []
 
-def create_alert(uid, title, expr, summary, description, for_duration, threshold, alert_type="system"):
+def create_alert(uid, title, expr, summary, description, for_duration, threshold, alert_type="system", evaluator_type="gt"):
     """Create a Grafana unified alert rule"""
     return {
         "uid": uid,
@@ -59,7 +59,7 @@ def create_alert(uid, title, expr, summary, description, for_duration, threshold
                 "model": {
                     "datasource": {"type": "__expr__", "uid": "-100"},
                     "conditions": [{
-                        "evaluator": {"params": [threshold], "type": "gt"},
+                        "evaluator": {"params": [threshold], "type": evaluator_type},
                         "operator": {"type": "and"},
                         "query": {"params": ["B"]},
                         "type": "query"
@@ -122,6 +122,30 @@ if alerts_config.get("storage_alerts", {}).get("enabled"):
         alert_type="storage"
     ))
 
+# Storage projection alert - warns when a drive is projected to fill within N days
+if alerts_config.get("storage_projection_alerts", {}).get("enabled"):
+    cfg = alerts_config["storage_projection_alerts"]
+    days = cfg["days_until_full_threshold"]
+    lookback = cfg["lookback_window"]
+    seconds_ahead = 86400 * days
+
+    projection_expr = (
+        f'predict_linear(node_filesystem_avail_bytes{{mountpoint=~"^/rootfs$|/rootfs/home$|/rootfs/mnt/data[0-9]+$",'
+        f'fstype!="tmpfs"}}[{lookback}], {seconds_ahead})'
+    )
+
+    alert_rules.append(create_alert(
+        uid="storage-projection-alert",
+        title="Storage Projection Alert",
+        expr=projection_expr,
+        summary=f"Drive projected to fill within {days} days",
+        description=f"Based on {lookback} usage trend, drive is projected to run out of space within {days} days",
+        for_duration=cfg["sustained_duration"],
+        threshold=0,
+        alert_type="storage_projection",
+        evaluator_type="lt",
+    ))
+
 # Write alert rules with global check interval
 with open('config/alert_rules.yml', 'w') as f:
     f.write("# AUTO-GENERATED FILE - DO NOT EDIT MANUALLY\n")
@@ -175,14 +199,24 @@ with open('config/notification_policies.yml', 'w') as f:
             "group_wait": "0s",
             "group_interval": alerts_config["check_interval"],
             "repeat_interval": repeat_interval,
-            "routes": [{
-                "receiver": "slack-alerts-storage",
-                "matchers": ["alert_type=storage"],
-                "group_by": ["alertname"],
-                "group_wait": "0s",
-                "group_interval": alerts_config["check_interval"],
-                "repeat_interval": repeat_interval
-            }]
+            "routes": [
+                {
+                    "receiver": "slack-alerts-storage",
+                    "matchers": ["alert_type=storage"],
+                    "group_by": ["alertname"],
+                    "group_wait": "0s",
+                    "group_interval": alerts_config["check_interval"],
+                    "repeat_interval": repeat_interval
+                },
+                {
+                    "receiver": "slack-alerts-storage-projection",
+                    "matchers": ["alert_type=storage_projection"],
+                    "group_by": ["alertname"],
+                    "group_wait": "0s",
+                    "group_interval": alerts_config["check_interval"],
+                    "repeat_interval": repeat_interval
+                }
+            ]
         }]
     }, f, default_flow_style=False, sort_keys=False)
 

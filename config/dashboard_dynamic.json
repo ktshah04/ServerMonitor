@@ -731,6 +731,77 @@
                 "value": "bytes"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Days Until Full"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "d"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 30
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 90
+                    },
+                    {
+                      "color": "green",
+                      "value": 180
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "text": "Stable",
+                        "color": "green"
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "to": 0,
+                      "result": {
+                        "text": "Stable",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -794,6 +865,16 @@
           "format": "table",
           "instant": true,
           "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[7d]))) / 86400",
+          "format": "table",
+          "instant": true,
+          "refId": "E"
         }
       ],
       "title": "Storage Details",
@@ -818,13 +899,15 @@
               "Value #A": 2,
               "Value #C": 3,
               "Value #B": 4,
-              "Value #D": 5
+              "Value #D": 5,
+              "Value #E": 6
             },
             "renameByName": {
               "Value #A": "Total",
               "Value #B": "Available",
               "Value #C": "Used",
               "Value #D": "Used %",
+              "Value #E": "Days Until Full",
               "device": "Device",
               "mountpoint": "Mount Point"
             }
@@ -865,6 +948,12 @@
                   "lastNotNull"
                 ],
                 "operation": "aggregate"
+              },
+              "Days Until Full": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
               }
             }
           }
@@ -879,13 +968,15 @@
               "Total (lastNotNull)": 2,
               "Used (lastNotNull)": 3,
               "Available (lastNotNull)": 4,
-              "Used % (lastNotNull)": 5
+              "Used % (lastNotNull)": 5,
+              "Days Until Full (lastNotNull)": 6
             },
             "renameByName": {
               "Available (lastNotNull)": "Available",
               "Total (lastNotNull)": "Total",
               "Used (lastNotNull)": "Used",
-              "Used % (lastNotNull)": "Used %"
+              "Used % (lastNotNull)": "Used %",
+              "Days Until Full (lastNotNull)": "Days Until Full"
             }
           }
         }

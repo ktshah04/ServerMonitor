@@ -12,6 +12,16 @@ contactPoints:
           text: "{{ range .Alerts }}⚠️ {{ .Labels.mountpoint }} is more than 90% full{{ end }}"
         disableResolveMessage: false
   - orgId: 1
+    name: slack-alerts-storage-projection
+    receivers:
+      - uid: slack-alerts-storage-projection
+        type: slack
+        settings:
+          url: ${SLACK_WEBHOOK_URL}
+          title: "{{ range .Alerts }}Storage Projection - {{ .Labels.hostname }} ({{ .Labels.device }}){{ end }}"
+          text: "{{ range .Alerts }}{{ .Labels.mountpoint }} is projected to fill within 30 days based on current usage trends{{ end }}"
+        disableResolveMessage: false
+  - orgId: 1
     name: slack-alerts-system
     receivers:
       - uid: slack-alerts-system

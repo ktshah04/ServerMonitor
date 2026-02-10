@@ -194,3 +194,66 @@ groups:
     labels:
       alert_type: storage
     isPaused: false
+  - uid: storage-projection-alert
+    title: Storage Projection Alert
+    condition: C
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        expr: predict_linear(node_filesystem_avail_bytes{mountpoint=~"^/rootfs$|/rootfs/home$|/rootfs/mnt/data[0-9]+$",fstype!="tmpfs"}[7d],
+          2592000)
+        interval: ''
+        refId: A
+        datasource:
+          type: prometheus
+          uid: prometheus
+    - refId: B
+      relativeTimeRange:
+        from: 0
+        to: 0
+      datasourceUid: '-100'
+      model:
+        datasource:
+          type: __expr__
+          uid: '-100'
+        expression: A
+        reducer: last
+        refId: B
+        type: reduce
+    - refId: C
+      relativeTimeRange:
+        from: 0
+        to: 0
+      datasourceUid: '-100'
+      model:
+        datasource:
+          type: __expr__
+          uid: '-100'
+        conditions:
+        - evaluator:
+            params:
+            - 0
+            type: lt
+          operator:
+            type: and
+          query:
+            params:
+            - B
+          type: query
+        expression: B
+        refId: C
+        type: threshold
+    noDataState: NoData
+    execErrState: Alerting
+    for: 1h
+    annotations:
+      summary: Drive projected to fill within 30 days
+      description: Based on 7d usage trend, drive is projected to run out of space
+        within 30 days
+    labels:
+      alert_type: storage_projection
+    isPaused: false
