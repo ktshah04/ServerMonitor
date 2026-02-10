@@ -36,8 +36,11 @@ docker compose stop "$SERVICE"
 container_id=$(docker compose ps -aq "$SERVICE" 2>/dev/null)
 container_name=$(docker inspect --format '{{.Name}}' "$container_id" | sed 's|^/||')
 
-echo "Copying backed-up data into new container..."
+echo "Copying backed-up data into volume..."
 docker cp "$BACKUP_DIR/." "$container_name:/prometheus"
+
+echo "Fixing file ownership for Prometheus..."
+docker run --rm -v prometheus_data:/prometheus alpine chown -R 65534:65534 /prometheus
 
 echo "Starting Prometheus..."
 docker compose start "$SERVICE"
