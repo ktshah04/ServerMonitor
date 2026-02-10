@@ -33,14 +33,11 @@ docker compose up -d
 echo "Stopping Prometheus to copy data onto volume..."
 docker compose stop "$SERVICE"
 
-container_id=$(docker compose ps -aq "$SERVICE" 2>/dev/null)
-container_name=$(docker inspect --format '{{.Name}}' "$container_id" | sed 's|^/||')
-
-echo "Copying backed-up data into volume..."
-docker cp "$BACKUP_DIR/." "$container_name:/prometheus"
-
-echo "Fixing file ownership for Prometheus..."
-docker run --rm -v prometheus_data:/prometheus alpine chown -R 65534:65534 /prometheus
+echo "Copying backed-up data into volume and fixing ownership..."
+docker run --rm \
+    -v prometheus_data:/prometheus \
+    -v "$BACKUP_DIR":/backup:ro \
+    alpine sh -c "rm -rf /prometheus/* && cp -a /backup/* /prometheus/ && chown -R 65534:65534 /prometheus"
 
 echo "Starting Prometheus..."
 docker compose start "$SERVICE"
