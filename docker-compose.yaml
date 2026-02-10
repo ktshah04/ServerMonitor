@@ -21,6 +21,7 @@ services:
     env_file: .env # loads .env variables
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=30d'
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml # Mount local prometheus config
