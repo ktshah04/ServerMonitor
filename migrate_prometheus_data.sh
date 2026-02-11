@@ -37,7 +37,16 @@ echo "Copying backed-up data into volume and fixing ownership..."
 docker run --rm \
     -v prometheus_data:/prometheus \
     -v "$BACKUP_DIR":/backup:ro \
-    alpine sh -c "rm -rf /prometheus/* && cp -a /backup/* /prometheus/ && chown -R 65534:65534 /prometheus"
+    alpine sh -c '
+        rm -rf /prometheus/*
+        if [ -d /backup/data/wal ]; then
+            echo "Found TSDB in data/ subdirectory, relocating to /prometheus/"
+            cp -a /backup/data/* /prometheus/
+        else
+            cp -a /backup/* /prometheus/
+        fi
+        chown -R 65534:65534 /prometheus
+    '
 
 echo "Starting Prometheus..."
 docker compose start "$SERVICE"
