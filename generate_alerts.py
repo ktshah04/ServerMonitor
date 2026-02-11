@@ -162,30 +162,25 @@ with open('config/alert_rules.yml', 'w') as f:
         }]
     }, f, default_flow_style=False, sort_keys=False)
 
-# Write notification policies - use shortest notification_interval (properly parsed)
-enabled_alerts = [v for k, v in alerts_config.items() if isinstance(v, dict) and v.get("enabled")]
-min_notif_interval = min(
-    (alert["notification_interval"] for alert in enabled_alerts),
-    key=parse_duration_to_seconds
-)
-
-# Actual notification timing = group_interval + repeat_interval
-# So to get desired notification_interval, we need: repeat_interval = notification_interval - group_interval
-check_interval_seconds = parse_duration_to_seconds(alerts_config["check_interval"])
-min_notif_seconds = parse_duration_to_seconds(min_notif_interval)
-repeat_seconds = max(min_notif_seconds - check_interval_seconds, check_interval_seconds)
-
-# Convert back to duration string
-def seconds_to_duration(seconds):
-    """Convert seconds to duration string"""
-    if seconds >= 3600 and seconds % 3600 == 0:
+def seconds_to_duration(seconds: int) -> str:
+    if seconds >= 86400 and seconds % 86400 == 0:
+        return f"{seconds // 86400}d"
+    elif seconds >= 3600 and seconds % 3600 == 0:
         return f"{seconds // 3600}h"
     elif seconds >= 60 and seconds % 60 == 0:
         return f"{seconds // 60}m"
     else:
         return f"{seconds}s"
 
-repeat_interval = seconds_to_duration(repeat_seconds)
+def repeat_interval_for(alert_cfg: dict) -> str:
+    check_interval_seconds = parse_duration_to_seconds(alerts_config["check_interval"])
+    notif_seconds = parse_duration_to_seconds(alert_cfg["notification_interval"])
+    repeat_seconds = max(notif_seconds - check_interval_seconds, check_interval_seconds)
+    return seconds_to_duration(repeat_seconds)
+
+system_repeat = repeat_interval_for(alerts_config["cpu_alerts"])
+storage_repeat = repeat_interval_for(alerts_config["storage_alerts"])
+projection_repeat = repeat_interval_for(alerts_config["storage_projection_alerts"])
 
 with open('config/notification_policies.yml', 'w') as f:
     f.write("# AUTO-GENERATED FILE - DO NOT EDIT MANUALLY\n")
@@ -198,7 +193,7 @@ with open('config/notification_policies.yml', 'w') as f:
             "group_by": ["alertname"],
             "group_wait": "0s",
             "group_interval": alerts_config["check_interval"],
-            "repeat_interval": repeat_interval,
+            "repeat_interval": system_repeat,
             "routes": [
                 {
                     "receiver": "slack-alerts-storage",
@@ -206,7 +201,7 @@ with open('config/notification_policies.yml', 'w') as f:
                     "group_by": ["alertname"],
                     "group_wait": "0s",
                     "group_interval": alerts_config["check_interval"],
-                    "repeat_interval": repeat_interval
+                    "repeat_interval": storage_repeat
                 },
                 {
                     "receiver": "slack-alerts-storage-projection",
@@ -214,7 +209,7 @@ with open('config/notification_policies.yml', 'w') as f:
                     "group_by": ["alertname"],
                     "group_wait": "0s",
                     "group_interval": alerts_config["check_interval"],
-                    "repeat_interval": repeat_interval
+                    "repeat_interval": projection_repeat
                 }
             ]
         }]

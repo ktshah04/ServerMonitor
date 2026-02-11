@@ -784,7 +784,7 @@
                     "options": {
                       "match": "null",
                       "result": {
-                        "text": "Stable",
+                        "text": "> 2 years",
                         "color": "green"
                       }
                     }
@@ -794,7 +794,17 @@
                     "options": {
                       "to": 0,
                       "result": {
-                        "text": "Stable",
+                        "text": "> 2 years",
+                        "color": "green"
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 730,
+                      "result": {
+                        "text": "> 2 years",
                         "color": "green"
                       }
                     }
