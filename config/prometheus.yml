@@ -23,3 +23,8 @@ scrape_configs:
       - targets: ['node-exporter-c:9100']
         labels:
           hostname: 'jc-compute01'
+
+  - job_name: 'dcgm-exporter'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['dcgm-exporter-c:9400']

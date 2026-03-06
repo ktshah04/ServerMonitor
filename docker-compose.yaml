@@ -48,6 +48,22 @@ services:
     networks:
       - monitoring # Connects node-exporter to monitoring network
 
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.9-3.6.1-ubuntu22.04
+    container_name: dcgm-exporter-c
+    restart: on-failure:3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    expose:
+      - "9400"
+    networks:
+      - monitoring
+
     # Service definition for Grafana (visualize metrics collected by Prometheus)
   grafana:
     image: grafana/grafana # Specifies the Grafana Docker image
