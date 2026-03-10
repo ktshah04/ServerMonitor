@@ -19,8 +19,12 @@ class CpuMetrics:
 
 
 def collect(top_n: int = 5) -> CpuMetrics:
-    usage = psutil.cpu_percent(interval=1)
     core_count = psutil.cpu_count(logical=True) or 1
+
+    # Prime per-process CPU counters, then measure over 1s interval
+    for proc in psutil.process_iter(["cpu_percent"]):
+        pass
+    usage = psutil.cpu_percent(interval=1)
 
     procs: list[ProcessInfo] = []
     for proc in psutil.process_iter(["pid", "name", "cpu_percent", "username"]):
