@@ -9,10 +9,9 @@ STATE_DIR="/var/lib/server-doctor"
 
 echo "=== Installing server-doctor ==="
 
-# Create venv and install
-python3 -m venv "$INSTALL_DIR/venv"
-"$INSTALL_DIR/venv/bin/pip" install --upgrade pip
-"$INSTALL_DIR/venv/bin/pip" install "$SCRIPT_DIR"
+# Install into a uv-managed venv
+uv venv "$INSTALL_DIR/venv"
+uv pip install --python "$INSTALL_DIR/venv/bin/python" "$SCRIPT_DIR"
 
 # Symlink the CLI to /usr/local/bin
 ln -sf "$INSTALL_DIR/venv/bin/server-doctor" /usr/local/bin/server-doctor
@@ -84,5 +83,4 @@ echo "=== Installation complete ==="
 echo "  Config: $CONFIG_DIR/config.yaml"
 echo "  Logs:   $LOG_DIR/remediation.log"
 echo "  Timer:  systemctl status server-doctor.timer"
-echo "  Venv:   $INSTALL_DIR/venv/"
 echo "  CLI:    server-doctor"
