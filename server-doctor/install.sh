@@ -2,14 +2,20 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="/opt/server-doctor"
 CONFIG_DIR="/etc/server-doctor"
 LOG_DIR="/var/log/server-doctor"
 STATE_DIR="/var/lib/server-doctor"
 
 echo "=== Installing server-doctor ==="
 
-# Install the package
-pip install --break-system-packages "$SCRIPT_DIR" 2>/dev/null || pip install "$SCRIPT_DIR"
+# Create venv and install
+python3 -m venv "$INSTALL_DIR/venv"
+"$INSTALL_DIR/venv/bin/pip" install --upgrade pip
+"$INSTALL_DIR/venv/bin/pip" install "$SCRIPT_DIR"
+
+# Symlink the CLI to /usr/local/bin
+ln -sf "$INSTALL_DIR/venv/bin/server-doctor" /usr/local/bin/server-doctor
 
 # Create directories
 mkdir -p "$CONFIG_DIR" "$LOG_DIR" "$STATE_DIR"
@@ -53,7 +59,7 @@ After=network.target docker.service
 
 [Service]
 Type=oneshot
-ExecStart=$(which server-doctor) monitor
+ExecStart=$INSTALL_DIR/venv/bin/server-doctor monitor
 TimeoutStartSec=120
 EOF
 
@@ -78,4 +84,5 @@ echo "=== Installation complete ==="
 echo "  Config: $CONFIG_DIR/config.yaml"
 echo "  Logs:   $LOG_DIR/remediation.log"
 echo "  Timer:  systemctl status server-doctor.timer"
+echo "  Venv:   $INSTALL_DIR/venv/"
 echo "  CLI:    server-doctor"
