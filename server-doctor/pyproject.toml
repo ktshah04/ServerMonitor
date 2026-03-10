@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "server-doctor"
+version = "0.1.0"
+description = "Server health diagnostics, enriched alerting, and automated remediation"
+requires-python = ">=3.11"
+dependencies = [
+    "psutil>=5.9",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+]
+
+[project.scripts]
+server-doctor = "server_doctor.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--cov=server_doctor", "--cov-report=term-missing", "--cov-branch"]
+
+[tool.coverage.run]
+source = ["src/server_doctor"]
+omit = ["*/__init__.py", "*/tests/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
