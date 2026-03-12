@@ -35,9 +35,25 @@ def test_cpu_collect_filters_zero_cpu(mock_psutil):
     assert result.top_processes[0].name == "active"
 
 
+def test_read_pss_parses_smaps(tmp_path):
+    smaps_content = "Rss:            50000 kB\nPss:            30000 kB\nSwap:               0 kB\n"
+    smaps_file = tmp_path / "smaps_rollup"
+    smaps_file.write_text(smaps_content)
+    with patch("server_doctor.collectors.memory.Path") as mock_path:
+        mock_path.return_value.read_text.return_value = smaps_content
+        result = memory._read_pss(1)
+    assert result == 30000 * 1024
+
+
+def test_read_pss_returns_none_on_missing():
+    result = memory._read_pss(999999999)
+    assert result is None
+
+
+@patch("server_doctor.collectors.memory._read_pss", return_value=None)
 @patch("server_doctor.collectors.memory.psutil")
 @patch("server_doctor.collectors.memory._parse_oom_kills")
-def test_memory_collect(mock_oom, mock_psutil):
+def test_memory_collect(mock_oom, mock_psutil, mock_pss):
     mock_oom.return_value = []
     mock_mem = MagicMock()
     mock_mem.total = 128 * 1024**3

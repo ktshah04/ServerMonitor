@@ -1,5 +1,6 @@
 import subprocess
 from dataclasses import dataclass
+from pathlib import Path
 
 import psutil
 
@@ -82,6 +83,17 @@ def _parse_oom_kills() -> list[OomKill]:
         return []
 
 
+def _read_pss(pid: int) -> int | None:
+    try:
+        text = Path(f"/proc/{pid}/smaps_rollup").read_text()
+        for line in text.splitlines():
+            if line.startswith("Pss:"):
+                return int(line.split()[1]) * 1024  # kB -> bytes
+    except (FileNotFoundError, PermissionError, ProcessLookupError, ValueError):
+        pass
+    return None
+
+
 def collect(top_n: int = 5) -> MemoryMetrics:
     mem = psutil.virtual_memory()
 
@@ -90,11 +102,12 @@ def collect(top_n: int = 5) -> MemoryMetrics:
         info = proc.info
         mem_info = info.get("memory_info")
         if mem_info and mem_info.rss > 0:
+            pss = _read_pss(info["pid"])
             procs.append(
                 ProcessInfo(
                     pid=info["pid"],
                     name=info["name"] or "unknown",
-                    rss_bytes=mem_info.rss,
+                    rss_bytes=pss if pss is not None else mem_info.rss,
                     user=info["username"] or "unknown",
                 )
             )
