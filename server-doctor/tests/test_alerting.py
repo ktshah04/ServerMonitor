@@ -13,7 +13,12 @@ def _make_memory(usage_percent: float = 50.0) -> MemoryMetrics:
     return MemoryMetrics(
         total_bytes=256 * 1024**3,
         used_bytes=int(256 * 1024**3 * usage_percent / 100),
+        available_bytes=int(256 * 1024**3 * (1 - usage_percent / 100)),
+        buffers_bytes=2 * 1024**3,
+        cached_bytes=30 * 1024**3,
+        shared_bytes=1 * 1024**3,
         usage_percent=usage_percent,
+        process_rss_total_bytes=44 * 1024**3,
         top_processes=[
             MemProcess(pid=100, name="python", rss_bytes=40 * 1024**3, user="kshah"),
             MemProcess(pid=200, name="mysqld", rss_bytes=4 * 1024**3, user="mysql"),

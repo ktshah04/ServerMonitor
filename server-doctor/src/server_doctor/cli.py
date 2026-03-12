@@ -42,6 +42,7 @@ def print_health(config: Config) -> None:
         f"  Memory: {_format_percent(mem.usage_percent, t.memory_warning, t.memory_critical)}"
         f"  ({mem.used_gb:.1f} GB / {mem.total_gb:.1f} GB)"
     )
+    print(f"          Processes: {mem.process_rss_total_gb:.1f} GB  |  Buffers/Cache: {mem.buffers_cached_gb:.1f} GB")
 
     if gpu_metrics.available:
         for g in gpu_metrics.gpus:

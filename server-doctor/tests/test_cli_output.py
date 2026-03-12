@@ -39,7 +39,12 @@ def test_print_health_output(mock_mem, mock_cpu, mock_disk, mock_gpu, capsys):
     mock_mem.return_value = MemoryMetrics(
         total_bytes=128 * 1024**3,
         used_bytes=100 * 1024**3,
+        available_bytes=28 * 1024**3,
+        buffers_bytes=2 * 1024**3,
+        cached_bytes=20 * 1024**3,
+        shared_bytes=1 * 1024**3,
         usage_percent=78.1,
+        process_rss_total_bytes=60 * 1024**3,
         top_processes=[MemProcess(pid=100, name="python", rss_bytes=40 * 1024**3, user="kshah")],
         recent_oom_kills=[OomKill(pid=999, process_name="oom_victim", timestamp="2026-03-10")],
     )
@@ -85,6 +90,8 @@ def test_print_health_output(mock_mem, mock_cpu, mock_disk, mock_gpu, capsys):
     assert "test-server" in output
     assert "CPU:" in output
     assert "Memory:" in output
+    assert "Processes:" in output
+    assert "Buffers/Cache:" in output
     assert "GPU 0:" in output
     assert "GPU 1:" in output
     assert "idle" in output
@@ -101,7 +108,12 @@ def test_print_health_no_gpu(mock_mem, mock_cpu, mock_disk, mock_gpu, capsys):
     mock_mem.return_value = MemoryMetrics(
         total_bytes=64 * 1024**3,
         used_bytes=30 * 1024**3,
+        available_bytes=34 * 1024**3,
+        buffers_bytes=1 * 1024**3,
+        cached_bytes=10 * 1024**3,
+        shared_bytes=0,
         usage_percent=46.9,
+        process_rss_total_bytes=19 * 1024**3,
         top_processes=[],
         recent_oom_kills=[],
     )

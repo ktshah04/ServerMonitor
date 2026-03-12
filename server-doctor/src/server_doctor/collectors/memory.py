@@ -27,7 +27,12 @@ class OomKill:
 class MemoryMetrics:
     total_bytes: int
     used_bytes: int
+    available_bytes: int
+    buffers_bytes: int
+    cached_bytes: int
+    shared_bytes: int
     usage_percent: float
+    process_rss_total_bytes: int
     top_processes: list[ProcessInfo]
     recent_oom_kills: list[OomKill]
 
@@ -38,6 +43,14 @@ class MemoryMetrics:
     @property
     def used_gb(self) -> float:
         return self.used_bytes / (1024**3)
+
+    @property
+    def buffers_cached_gb(self) -> float:
+        return (self.buffers_bytes + self.cached_bytes) / (1024**3)
+
+    @property
+    def process_rss_total_gb(self) -> float:
+        return self.process_rss_total_bytes / (1024**3)
 
 
 def _parse_oom_kills() -> list[OomKill]:
@@ -88,11 +101,17 @@ def collect(top_n: int = 5) -> MemoryMetrics:
 
     procs.sort(key=lambda p: p.rss_bytes, reverse=True)
     oom_kills = _parse_oom_kills()
+    process_rss_total = sum(p.rss_bytes for p in procs)
 
     return MemoryMetrics(
         total_bytes=mem.total,
         used_bytes=mem.used,
+        available_bytes=mem.available,
+        buffers_bytes=getattr(mem, "buffers", 0),
+        cached_bytes=getattr(mem, "cached", 0),
+        shared_bytes=getattr(mem, "shared", 0),
         usage_percent=mem.percent,
+        process_rss_total_bytes=process_rss_total,
         top_processes=procs[:top_n],
         recent_oom_kills=oom_kills,
     )

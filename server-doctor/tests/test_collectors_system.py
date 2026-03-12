@@ -42,6 +42,10 @@ def test_memory_collect(mock_oom, mock_psutil):
     mock_mem = MagicMock()
     mock_mem.total = 128 * 1024**3
     mock_mem.used = 100 * 1024**3
+    mock_mem.available = 28 * 1024**3
+    mock_mem.buffers = 2 * 1024**3
+    mock_mem.cached = 15 * 1024**3
+    mock_mem.shared = 1 * 1024**3
     mock_mem.percent = 78.1
     mock_psutil.virtual_memory.return_value = mock_mem
 
@@ -58,6 +62,8 @@ def test_memory_collect(mock_oom, mock_psutil):
     assert result.top_processes[0].pid == 555
     assert abs(result.total_gb - 128.0) < 0.1
     assert abs(result.used_gb - 100.0) < 0.1
+    assert abs(result.buffers_cached_gb - 17.0) < 0.1
+    assert result.process_rss_total_bytes == 40 * 1024**3
 
 
 @patch("server_doctor.collectors.memory.subprocess.run")
