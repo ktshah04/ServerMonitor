@@ -178,7 +178,7 @@ def repeat_interval_for(alert_cfg: dict) -> str:
     repeat_seconds = max(notif_seconds - check_interval_seconds, check_interval_seconds)
     return seconds_to_duration(repeat_seconds)
 
-system_repeat = repeat_interval_for(alerts_config["cpu_alerts"])
+system_repeat = repeat_interval_for(alerts_config.get("cpu_alerts", alerts_config.get("memory_alerts")))
 storage_repeat = repeat_interval_for(alerts_config["storage_alerts"])
 projection_repeat = repeat_interval_for(alerts_config["storage_projection_alerts"])
 

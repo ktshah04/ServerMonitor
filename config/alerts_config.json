@@ -6,12 +6,6 @@
     "sustained_duration": "10s",
     "notification_interval": "30m"
   },
-  "cpu_alerts": {
-    "enabled": true,
-    "threshold_percent": 95,
-    "sustained_duration": "10m",
-    "notification_interval": "1h"
-  },
   "memory_alerts": {
     "enabled": true,
     "threshold_percent": 95,
@@ -21,7 +15,7 @@
   "storage_projection_alerts": {
     "enabled": true,
     "days_until_full_threshold": 30,
-    "lookback_window": "7d",
+    "lookback_window": "14d",
     "sustained_duration": "1h",
     "notification_interval": "365d"
   }
