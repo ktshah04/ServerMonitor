@@ -52,6 +52,13 @@ services:
     image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.9-3.6.1-ubuntu22.04
     container_name: dcgm-exporter-c
     restart: on-failure:3
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - DCGM_EXPORTER_NO_DCP_METRICS=1
+    volumes:
+      - ./config/dcgm-counters.csv:/etc/dcgm-exporter/custom-counters.csv:ro
+    command: ["-f", "/etc/dcgm-exporter/custom-counters.csv"]
     deploy:
       resources:
         reservations:
