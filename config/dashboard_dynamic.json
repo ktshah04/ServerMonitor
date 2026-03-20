@@ -832,7 +832,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Days Until Full (30d)"
+              "options": "Days Until Full (14d)"
             },
             "properties": [
               {
@@ -981,7 +981,8 @@
           "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[7d]))) / 86400",
           "format": "table",
           "instant": true,
-          "refId": "E"
+          "refId": "E",
+          "interval": "5m"
         },
         {
           "datasource": {
@@ -991,17 +992,19 @@
           "expr": "-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[7d]) * 86400",
           "format": "table",
           "instant": true,
-          "refId": "F"
+          "refId": "F",
+          "interval": "5m"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[30d]))) / 86400",
+          "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[14d]))) / 86400",
           "format": "table",
           "instant": true,
-          "refId": "G"
+          "refId": "G",
+          "interval": "5m"
         }
       ],
       "title": "Storage Details",
@@ -1040,7 +1043,7 @@
               "device": "Device",
               "mountpoint": "Mount Point",
               "Value #F": "Daily Rate (7d)",
-              "Value #G": "Days Until Full (30d)"
+              "Value #G": "Days Until Full (14d)"
             }
           }
         },
@@ -1092,7 +1095,7 @@
                 ],
                 "operation": "aggregate"
               },
-              "Days Until Full (30d)": {
+              "Days Until Full (14d)": {
                 "aggregations": [
                   "lastNotNull"
                 ],
@@ -1114,7 +1117,7 @@
               "Used % (lastNotNull)": 5,
               "Days Until Full (lastNotNull)": 6,
               "Daily Rate (7d) (lastNotNull)": 7,
-              "Days Until Full (30d) (lastNotNull)": 8
+              "Days Until Full (14d) (lastNotNull)": 8
             },
             "renameByName": {
               "Available (lastNotNull)": "Available",
@@ -1123,7 +1126,7 @@
               "Used % (lastNotNull)": "Used %",
               "Days Until Full (lastNotNull)": "Days Until Full",
               "Daily Rate (7d) (lastNotNull)": "Daily Rate (7d)",
-              "Days Until Full (30d) (lastNotNull)": "Days Until Full (30d)"
+              "Days Until Full (30d) (lastNotNull)": "Days Until Full (14d)"
             }
           }
         }
@@ -1236,9 +1239,10 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[1d]) * 86400",
-          "legendFormat": "{{mountpoint}}",
-          "refId": "A"
+          "expr": "-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[6h]) * 86400",
+          "legendFormat": "{{mountpoint}} (6h rate)",
+          "refId": "A",
+          "interval": "15m"
         },
         {
           "datasource": {
@@ -1247,7 +1251,8 @@
           },
           "expr": "-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[7d]) * 86400",
           "legendFormat": "{{mountpoint}} (7d avg)",
-          "refId": "B"
+          "refId": "B",
+          "interval": "15m"
         }
       ],
       "title": "Daily Storage Consumption Rate",
@@ -1343,7 +1348,8 @@
           },
           "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[1d]))) / 86400",
           "legendFormat": "{{mountpoint}} (1d trend)",
-          "refId": "A"
+          "refId": "A",
+          "interval": "15m"
         },
         {
           "datasource": {
@@ -1352,16 +1358,18 @@
           },
           "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[7d]))) / 86400",
           "legendFormat": "{{mountpoint}} (7d trend)",
-          "refId": "B"
+          "refId": "B",
+          "interval": "15m"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[30d]))) / 86400",
-          "legendFormat": "{{mountpoint}} (30d trend)",
-          "refId": "C"
+          "expr": "(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"} / (-deriv(node_filesystem_avail_bytes{mountpoint=~\"$mountpoint_regex\",fstype!=\"tmpfs\"}[14d]))) / 86400",
+          "legendFormat": "{{mountpoint}} (14d trend)",
+          "refId": "C",
+          "interval": "15m"
         }
       ],
       "title": "Storage Projection Comparison",
@@ -2068,9 +2076,10 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "count_over_time((DCGM_FI_DEV_GPU_UTIL > 10)[24h:1m]) / count_over_time(DCGM_FI_DEV_GPU_UTIL[24h:1m]) * 24",
+          "expr": "count_over_time((DCGM_FI_DEV_GPU_UTIL > 10)[24h:5m]) / count_over_time(DCGM_FI_DEV_GPU_UTIL[24h:5m]) * 24",
           "legendFormat": "GPU {{gpu}}",
-          "refId": "A"
+          "refId": "A",
+          "interval": "5m"
         }
       ],
       "title": "GPU Active Hours (24h)",
